@@ -1,0 +1,16 @@
+{
+    "Nibbles":{
+        "pfp":"https://cloud-bv8ratyvx-hack-club-bot.vercel.app/4nibbler.webp",
+        "shop_token":"recumsA2ejGwx6zHF",
+        "password":"testpassword",
+        "username":"Nibbles",
+        "tickets":"25"
+    },
+    "TheGrass":{
+        "pfp":"https://cloud-bv8ratyvx-hack-club-bot.vercel.app/3josh.jpg",
+        "shop_token":"recz0hxuoejZ2DTV9",
+        "password":"testpassword",
+        "username":"TheGrass",
+        "tickets":"25"
+    }
+}

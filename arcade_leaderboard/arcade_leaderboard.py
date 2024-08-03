@@ -1,4 +1,26 @@
 import reflex as rx
+import pymongo
+import os
+import dotenv
+dotenv.load_dotenv()
+
+print(os.environ.get("mongoDB"))
+dbclient = pymongo.MongoClient(os.environ.get("mongoDB"))
+db= dbclient["arcade-leaderboard"]
+
+class State(rx.State):
+    people:dict
+    def get_people():
+        people = db["people"]
+        result = []
+        for x in people.find():
+            result.append(x)
+        return result
+    print(get_people())
+        
+        
+        
+    print(dbclient.list_database_names())
 
 def leaderboard_item(name: str, tickets: int, image_url: str) -> rx.Component:
     return rx.center(
