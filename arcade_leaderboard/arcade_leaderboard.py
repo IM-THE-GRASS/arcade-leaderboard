@@ -14,25 +14,42 @@ class State(rx.State):
         people = db["people"]
         result = []
         for x in people.find():
+            x.pop('_id')
             result.append(x)
         return result
-    print(get_people())
-        
+    people:list[dict[str, str]] = get_people()
+    print(type(people))
+    print(hash("testpassword"))
+    print(hash("testpassword"))
+    print(hash("testpassword"))
         
         
     print(dbclient.list_database_names())
 
-def leaderboard_item(name: str, tickets: int, image_url: str) -> rx.Component:
+def leaderboard_item(name: str, tickets: str, image_url: str, info:list[dict[str, str]] = []) -> rx.Component:
     return rx.center(
-        rx.hstack(
-            rx.image(src=image_url, width="auto", height="16vh", border_radius="999px"),
-            rx.vstack(
-                rx.text(name, font_size=["4vw", "3vw", "2.5vw"], font_weight="600", color="#3DD68C"),
-                rx.text(f"{tickets} tickets", font_size=["3vw", "2.5vw", "1.8vw"], font_weight="600", color="#3DD68C"),
-                align_items="flex-start",
+        rx.cond(
+            info,
+            rx.hstack(
+                rx.image(src=image_url, width="auto", height="16vh", border_radius="999px"),
+                rx.vstack(
+                    rx.text(name, font_size=["4vw", "3vw", "2.5vw"], font_weight="600", color="#3DD68C"),
+                    rx.text(f"{info[0]} tickets", font_size=["3vw", "2.5vw", "1.8vw"], font_weight="600", color="#3DD68C"),
+                    align_items="flex-start",
+                ),
+                spacing="2vw",
             ),
-            spacing="2vw",
+            rx.hstack(
+                rx.image(src=image_url, width="auto", height="16vh", border_radius="999px"),
+                rx.vstack(
+                    rx.text(name, font_size=["4vw", "3vw", "2.5vw"], font_weight="600", color="#3DD68C"),
+                    rx.text(f"{tickets} tickets", font_size=["3vw", "2.5vw", "1.8vw"], font_weight="600", color="#3DD68C"),
+                    align_items="flex-start",
+                ),
+                spacing="2vw",
+            ),
         ),
+        
         justify="start",
         padding="2vw",
         background="#113B29",
@@ -51,17 +68,14 @@ def leaderboard() -> rx.Component:
             width="100%",
         ),
         rx.vstack(
-            leaderboard_item("Nibbles", 47, "https://cloud-bv8ratyvx-hack-club-bot.vercel.app/4nibbler.webp"),
-            leaderboard_item("Nibbles", 47, "https://cloud-bv8ratyvx-hack-club-bot.vercel.app/4nibbler.webp"),
-            leaderboard_item("Nibbles", 47, "https://cloud-bv8ratyvx-hack-club-bot.vercel.app/4nibbler.webp"),
-            leaderboard_item("Nibbles", 47, "https://cloud-bv8ratyvx-hack-club-bot.vercel.app/4nibbler.webp"),
-            leaderboard_item("Nibbles", 47, "https://cloud-bv8ratyvx-hack-club-bot.vercel.app/4nibbler.webp"),
-            leaderboard_item("Nibbles", 47, "https://cloud-bv8ratyvx-hack-club-bot.vercel.app/4nibbler.webp"),
-            leaderboard_item("Nibbles", 47, "https://cloud-bv8ratyvx-hack-club-bot.vercel.app/4nibbler.webp"),
+            rx.foreach(
+                State.people,
+                lambda info: leaderboard_item("Nibbles", "47", "https://cloud-bv8ratyvx-hack-club-bot.vercel.app/4nibbler.webp", info=info),
+            ),
             spacing="2vh",
             width="100%",
             overflow_y="auto",
-            max_height="70vh",
+            height="70vh",
         ),
         spacing="3vh",
         width="95vw",
