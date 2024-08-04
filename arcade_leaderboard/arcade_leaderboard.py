@@ -9,56 +9,55 @@ dbclient = pymongo.MongoClient(os.environ.get("mongoDB"))
 db= dbclient["arcade-leaderboard"]
 
 class State(rx.State):
-    people:dict
+    def prints(to_print, thing2=None):
+        print("1", to_print)
+        print("2", thing2)
+    
+    
     def get_people():
         people = db["people"]
-        result = []
+        result = {}
         for x in people.find():
             x.pop('_id')
-            result.append(x)
+            keys = list(x.keys())
+            x = x[keys[0]]
+            print(type(x))
+            print( "x", x)
+            result[keys[0]] = x
         return result
-    people:list[dict[str, str]] = get_people()
-    print(type(people))
-    print(hash("testpassword"))
-    print(hash("testpassword"))
-    print(hash("testpassword"))
-        
-        
-    print(dbclient.list_database_names())
-
-def leaderboard_item(name: str, tickets: str, image_url: str, info:list[dict[str, str]] = []) -> rx.Component:
+    people:dict[str, dict[str, str]] = get_people()
+def leaderboard_item(info):
     return rx.center(
-        rx.cond(
-            info,
-            rx.hstack(
-                rx.image(src=image_url, width="auto", height="16vh", border_radius="999px"),
-                rx.vstack(
-                    rx.text(name, font_size=["4vw", "3vw", "2.5vw"], font_weight="600", color="#3DD68C"),
-                    rx.text(f"{info[0]} tickets", font_size=["3vw", "2.5vw", "1.8vw"], font_weight="600", color="#3DD68C"),
-                    align_items="flex-start",
-                ),
-                spacing="2vw",
+        rx.hstack(
+            rx.cond(
+                info[1]["pfp"],
+                rx.avatar(src=info[1]["pfp"], fallback= info[1]["username"][0:2], size="3", radius="full"),
+                #rx.image(src=info[1]["pfp"], width="auto", height="16vh", border_radius="999px"),
             ),
-            rx.hstack(
-                rx.image(src=image_url, width="auto", height="16vh", border_radius="999px"),
-                rx.vstack(
-                    rx.text(name, font_size=["4vw", "3vw", "2.5vw"], font_weight="600", color="#3DD68C"),
-                    rx.text(f"{tickets} tickets", font_size=["3vw", "2.5vw", "1.8vw"], font_weight="600", color="#3DD68C"),
-                    align_items="flex-start",
+            
+            rx.vstack(
+                rx.text(f"{info[1]["username"]}", font_size=["2.5vw"], font_weight="600", color="#3DD68C", padding_top="0.5vh"),
+                rx.cond(
+                    info[1]["tickets"],
+                    rx.text(f"{info[1]['tickets']} 🎟️", font_size=["2vw"], font_weight="600", color="#3DD68C"),
                 ),
-                spacing="2vw",
+                
+                spacing='1',
+                align_items="flex-start",
+                text_wrap="wrap",
             ),
+            spacing="2vw",
         ),
-        
         justify="start",
         padding="2vw",
         background="#113B29",
         border_radius="8px",
         width="100%",
         height="15vh",
+        padding_right="78vw"
     )
 
-def leaderboard() -> rx.Component:
+def leaderboard():
     return rx.vstack(
         rx.box(
             rx.text("Arcade leaderboard", font_size=["6vw", "5vw", "4vw"], font_weight="700", color="#B1F1CB"),
@@ -70,7 +69,7 @@ def leaderboard() -> rx.Component:
         rx.vstack(
             rx.foreach(
                 State.people,
-                lambda info: leaderboard_item("Nibbles", "47", "https://cloud-bv8ratyvx-hack-club-bot.vercel.app/4nibbler.webp", info=info),
+                lambda info: leaderboard_item(info),
             ),
             spacing="2vh",
             width="100%",
@@ -85,7 +84,7 @@ def leaderboard() -> rx.Component:
         border_radius="8px",
     )
 
-def index() -> rx.Component:
+def index():
     return rx.center(
         rx.box(
             leaderboard(),
