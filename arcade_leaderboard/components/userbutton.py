@@ -45,11 +45,18 @@ def dialog_content():
                 on_change=State.set_reg_url,
                 placeholder="Enter your shop URL you get when you do /shop in the arcade slack",
             ),
+            rx.text(
+                State.reg_error,
+                size="2",
+                weight="medium",
+                color_scheme="red"
+            ),
             rx.dialog.close(
                 rx.button(
                     "Confirm",
                     color_scheme="green",
                     disabled = State.register_button_disabled,
+                    on_click=State.register
                 )
             ),
             direction="column",

@@ -14,7 +14,7 @@ people = db["people"]
 class State(rx.State):
     
     
-    
+    reg_error:str
     reg_password:str
     reg_username:str
     reg_url:str
@@ -22,7 +22,7 @@ class State(rx.State):
     
     def check_reg_valid(self):
         if not self.get_balance(self.strip_url(self.reg_url)):
-            print("Your shop URL is invalid. It should be in the format https://hackclub.com/arcade/XXXXXXXXXXXXXXXXX/shop/")
+            self.reg_error = "Your shop URL is invalid. It should be in the format https://hackclub.com/arcade/XXXXXXXXXXXXXXXXX/shop/"
             return False
         
         if self.reg_password != "" and self.reg_username != "":
@@ -39,12 +39,33 @@ class State(rx.State):
                 regurl = self.strip_url(self.reg_url)
                 print(person_url, regurl)
                 if person_name == regname or regurl == person_url:
-                    print("This user already exists!")
-                    return False
+                    self.reg_error = "This user already exists!"
+                    #return False
             return True
         else:
-            print("Invalid username or password")
+            self.reg_error = "Invalid username or password"
             return False
+    
+    def register(self):
+        username = self.reg_username
+        shop_token = self.strip_url(self.reg_url)
+        tickets = self.get_balance(shop_token, True)
+        
+        password = self.reg_password
+        if self.check_reg_valid():
+            people.insert_one(
+                {
+                    username:{
+                        "pfp":"",
+                        "shop_token":shop_token,
+                        "username":username,
+                        "tickets": str(tickets),
+                        "password": password
+                    }
+                }
+            )
+            
+    
     
     
     def set_reg_username(self, new:str):

@@ -2,34 +2,48 @@ import reflex as rx
 from arcade_leaderboard.state import *
 import arcade_leaderboard.components.userbutton as userbutton
 def leaderboard_item(info):
-    return rx.center(
+    return rx.box(
         rx.hstack(
             rx.center(
                 rx.avatar(src=info[1]["pfp"], fallback= info[1]["username"][0:2], size="4", radius="full"),    
-                height="15vh",
-                padding_left="10vw"
+                height="15vh"
             ),
             
             rx.vstack(
-                rx.text(f"{info[1]["username"]}", font_size=["2.5vw"], font_weight="600", color="#3DD68C", padding_top="0.5vh"),
+                rx.text(
+                    
+                    f"{info[1]["username"]}", 
+                    font_size=["2.5vw"],
+                    font_weight="600",
+                    
+                    color="#3DD68C",
+                    padding_top="0.5vh",
+                    text_wrap="nowrap"
+                
+                ),
                 rx.cond(
                     info[1]["tickets"],
-                    rx.text(f"{info[1]['tickets']} 🎟️", font_size=["2vw"], font_weight="600", color="#3DD68C"),
+                    rx.text(
+                        f"{info[1]['tickets']} 🎟️",
+                        font_size=["2vw"],
+                        font_weight="600",
+                        color="#3DD68C", 
+                        
+                        text_wrap="nowrap"
+                    ),
                 ),
                 
                 spacing='1',
                 align_items="flex-start",
-                text_wrap="wrap",
             ),
             spacing="2vw",
         ),
-        justify="start",
-        padding="2vw",
+        padding_bottom="3vh",
+        padding_left="2vw",
         background="#113B29",
         border_radius="8px",
         width="100%",
         height="15vh",
-        padding_right="78vw"
     )
 
 def leaderboard():
