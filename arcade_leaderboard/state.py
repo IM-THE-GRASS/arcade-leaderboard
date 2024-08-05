@@ -10,7 +10,7 @@ dotenv.load_dotenv()
 print(os.environ.get("mongoDB"))
 dbclient = pymongo.MongoClient(os.environ.get("mongoDB"))
 db= dbclient["arcade-leaderboard"]
-
+people = db["people"]
 class State(rx.State):
     
     
@@ -18,14 +18,32 @@ class State(rx.State):
     reg_password:str
     reg_username:str
     reg_url:str
-    register_button_disabled:bool = False
+    register_button_disabled:bool = True
     
     def check_reg_valid(self):
-        if self.get_balance(self.strip_url(self.reg_url)) and self.reg_password != "" and self.reg_username != "":
-            print("yes!")
+        if not self.get_balance(self.strip_url(self.reg_url)):
+            print("Your shop URL is invalid. It should be in the format https://hackclub.com/arcade/XXXXXXXXXXXXXXXXX/shop/")
+            return False
+        
+        if self.reg_password != "" and self.reg_username != "":
+            
+            for person in people.find():
+                person.pop('_id')
+                keys = list(person.keys())
+                person = person[keys[0]]
+                person_name = person["username"]
+                person_name = person_name.lower().replace(" ", "")
+                regname = self.reg_username
+                regname = regname.lower().replace(" ", "")
+                person_url = person["shop_token"]
+                regurl = self.strip_url(self.reg_url)
+                print(person_url, regurl)
+                if person_name == regname or regurl == person_url:
+                    print("This user already exists!")
+                    return False
             return True
         else:
-            print("no :(")
+            print("Invalid username or password")
             return False
     
     
@@ -74,7 +92,7 @@ class State(rx.State):
     
     
     def get_people():
-        people = db["people"]
+        
         result = {}
         for x in people.find():
             x.pop('_id')
