@@ -14,7 +14,9 @@ def dialog_content():
                 weight="bold",
             ),
             rx.input(
+                value = State.reg_username,
                 placeholder="Enter your username",
+                on_change=State.set_reg_username
             ),
             rx.text(
                 "Password",
@@ -25,8 +27,10 @@ def dialog_content():
             ),
             
             rx.input(
+                value=State.reg_password,
                 placeholder="Enter your password",
                 type="password",
+                on_change=State.set_reg_password
             ),
             rx.text(
                 "Shop URL",
@@ -37,12 +41,15 @@ def dialog_content():
             ),
             
             rx.input(
+                value=State.reg_url,
+                on_change=State.set_reg_url,
                 placeholder="Enter your shop URL you get when you do /shop in the arcade slack",
             ),
             rx.dialog.close(
                 rx.button(
                     "Confirm",
                     color_scheme="green",
+                    disabled = State.register_button_disabled,
                 )
             ),
             direction="column",

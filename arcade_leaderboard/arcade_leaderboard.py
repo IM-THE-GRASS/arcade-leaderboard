@@ -46,14 +46,6 @@ def leaderboard():
                 State.people,
                 lambda info: leaderboard_item(info),
             ),
-            rx.foreach(
-                State.people,
-                lambda info: leaderboard_item(info),
-            ),
-            rx.foreach(
-                State.people,
-                lambda info: leaderboard_item(info),
-            ),
             spacing="2vh",
             width="100%",
             overflow_y="auto",
