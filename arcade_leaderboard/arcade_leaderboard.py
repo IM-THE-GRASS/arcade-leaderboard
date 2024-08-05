@@ -29,10 +29,10 @@ class State(rx.State):
 def leaderboard_item(info):
     return rx.center(
         rx.hstack(
-            rx.cond(
-                info[1]["pfp"],
-                rx.avatar(src=info[1]["pfp"], fallback= info[1]["username"][0:2], size="3", radius="full"),
-                #rx.image(src=info[1]["pfp"], width="auto", height="16vh", border_radius="999px"),
+            rx.center(
+                rx.avatar(src=info[1]["pfp"], fallback= info[1]["username"][0:2], size="4", radius="full"),    
+                height="15vh",
+                padding_left="10vw"
             ),
             
             rx.vstack(
@@ -71,6 +71,14 @@ def leaderboard():
                 State.people,
                 lambda info: leaderboard_item(info),
             ),
+            rx.foreach(
+                State.people,
+                lambda info: leaderboard_item(info),
+            ),
+            rx.foreach(
+                State.people,
+                lambda info: leaderboard_item(info),
+            ),
             spacing="2vh",
             width="100%",
             overflow_y="auto",
@@ -100,21 +108,23 @@ def index():
                 background="#174933",
                 border_radius="50%",
                 overflow="hidden",
-                position="absolute",
-                right="-4vw",
-                top="7vh",
+                position="stickey",
+                right="-2vw",
                 display="flex",
                 justify_content="center",
                 align_items="center",
+                top="20vh"
             ),
             width="95vw",
             max_width="1200px",
             position="relative",
+            
         ),
         width="100%",
         height="100vh",
         background="#0C231A",
-        overflow="hidden"
+        overflow="hidden",
+        padding_top = "12vh"
     )
 
 app = rx.App()
