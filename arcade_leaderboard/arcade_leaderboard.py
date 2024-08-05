@@ -1,31 +1,6 @@
 import reflex as rx
-import pymongo
-import os
-import dotenv
-dotenv.load_dotenv()
-
-print(os.environ.get("mongoDB"))
-dbclient = pymongo.MongoClient(os.environ.get("mongoDB"))
-db= dbclient["arcade-leaderboard"]
-
-class State(rx.State):
-    def prints(to_print, thing2=None):
-        print("1", to_print)
-        print("2", thing2)
-    
-    
-    def get_people():
-        people = db["people"]
-        result = {}
-        for x in people.find():
-            x.pop('_id')
-            keys = list(x.keys())
-            x = x[keys[0]]
-            print(type(x))
-            print( "x", x)
-            result[keys[0]] = x
-        return result
-    people:dict[str, dict[str, str]] = get_people()
+from arcade_leaderboard.state import *
+import arcade_leaderboard.components.userbutton as userbutton
 def leaderboard_item(info):
     return rx.center(
         rx.hstack(
@@ -96,25 +71,7 @@ def index():
     return rx.center(
         rx.box(
             leaderboard(),
-            rx.center(
-                rx.icon(
-                    tag="user_round_cog",
-                    color="#B1F1CB",
-                    size=70,
-                ),
-                width="6vw",
-                height="6vw",
-                padding="1vw",
-                background="#174933",
-                border_radius="50%",
-                overflow="hidden",
-                position="stickey",
-                right="-2vw",
-                display="flex",
-                justify_content="center",
-                align_items="center",
-                top="20vh"
-            ),
+            userbutton.button(),
             width="95vw",
             max_width="1200px",
             position="relative",
