@@ -57,7 +57,7 @@ def leaderboard():
         ),
         rx.vstack(
             rx.foreach(
-                State.people,
+                State.peopledict,
                 lambda info: leaderboard_item(info),
             ),
             spacing="2vh",
@@ -71,6 +71,7 @@ def leaderboard():
         padding="3vw",
         background="#132D21",
         border_radius="8px",
+        on_mount=State.update_people
     )
 
 def index():
