@@ -6,6 +6,8 @@ import requests
 from bs4 import BeautifulSoup
 import json
 import datetime
+
+
 dotenv.load_dotenv()
 
 print(os.environ.get("mongoDB"))
@@ -113,7 +115,7 @@ class State(rx.State):
     def get_people(self = None):
         
         result = {}
-        for x in people.find():
+        for x in people.find().sort("tickets", -1):
             x.pop('_id')
             result[x["username"]] = x
         return result
@@ -131,11 +133,10 @@ class State(rx.State):
                     upsert=True    
                 )
                 print(result.modified_count)
-                print(result.raw_result)
     def update_people(self):
-        self.peopledict = self.get_people()
+        
         self.update_ticket_counts()
         self.peopledict = self.get_people()
         print(self.peopledict, "PEOPLEDICT")
-    
+    peopledict = get_people()
         

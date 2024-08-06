@@ -1,11 +1,43 @@
 import reflex as rx
 from arcade_leaderboard.state import *
 import arcade_leaderboard.components.userbutton as userbutton
-def leaderboard_item(info):
+from reflex_lottiefiles import LottieFiles
+
+
+def leaderboard_item(info, index):
     return rx.box(
         rx.hstack(
+            
             rx.center(
-                rx.avatar(src=info[1]["pfp"], fallback= info[1]["username"][0:2], size="4", radius="full"),    
+                rx.hstack(
+                    rx.cond(
+                        index != 0,
+                        rx.text(
+                            f"{index + 1}",
+                            color_scheme="green",
+                            size="9",
+                            font_weight="bolder"
+                        ),
+                        rx.box(
+                            LottieFiles(
+                                src="https://lottie.host/b3f43394-a351-4755-9c03-5c61100951e4/kHb0G7NsSI.lottie",
+                                autoplay=True,
+                                loop=False,
+                                width="15vw",
+                                height="5vw"
+                            ),
+                            right="-100"
+                            position="relative",
+                        )
+                    ),
+                    
+                    
+                    rx.avatar(src=info[1]["pfp"], fallback= info[1]["username"][0:2], size="5", radius="full"),   
+                    spacing="6"
+                ),
+                
+                
+                 
                 height="15vh"
             ),
             
@@ -23,14 +55,32 @@ def leaderboard_item(info):
                 ),
                 rx.cond(
                     info[1]["tickets"],
-                    rx.text(
-                        f"{info[1]['tickets']} 🎟️",
-                        font_size=["2vw"],
-                        font_weight="600",
-                        color="#3DD68C", 
+                    rx.hstack(
+                        rx.text(
+                            f"{info[1]['tickets']} 🎟️",
+                            font_size=["2vw"],
+                            font_weight="600",
+                            color="#3DD68C", 
+                            
+                            text_wrap="nowrap"
+                        ),
+                        rx.box(
+                            rx.desktop_only(
+                                LottieFiles(
+                                    src="https://lottie.host/1216c16a-a76d-4084-843c-7d6f06e931fa/FIfp90siNI.lottie",
+                                    autoplay=True,
+                                    loop=False,
+                                    width="11vw",
+                                ),
+                            ),
+                            
+                            position="relative",
+                            right="7.5vw",
+                            top="-4.4vh"
+                        )
                         
-                        text_wrap="nowrap"
-                    ),
+                    )
+                    
                 ),
                 
                 spacing='1',
@@ -58,7 +108,7 @@ def leaderboard():
         rx.vstack(
             rx.foreach(
                 State.peopledict,
-                lambda info: leaderboard_item(info),
+                lambda info, index: leaderboard_item(info, index),
             ),
             spacing="2vh",
             width="100%",
