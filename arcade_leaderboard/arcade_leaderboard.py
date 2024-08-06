@@ -13,15 +13,26 @@ def leaderboard_item(info, indexnum):
                     rx.cond(
                         State.top.contains(indexnum+1),
                         rx.box(
-                            LottieFiles(
-                                src=State.top_anims[indexnum+1],
-                                autoplay=True,
-                                loop=False,
-                                width="15vw",
-                                height="7vw"
+                            rx.mobile_and_tablet(
+                                LottieFiles(
+                                    src=State.top_anims[indexnum+1],
+                                    autoplay=True,
+                                    loop=False,
+                                    width="10vh",
+                                    height="12.5vh"
+                                ),
                             ),
-                            margin_right="-6.8vw",
-                            margin_left="-6vw",
+                            rx.desktop_only(
+                                LottieFiles(
+                                    src=State.top_anims[indexnum+1],
+                                    autoplay=True,
+                                    loop=False,
+                                    width="17vh",
+                                    height="12.5vh"
+                                ),
+                            ),
+                            margin_right="-4vw",
+                            margin_left="-3vw",
                             position="relative",
                         ),
                         
@@ -33,12 +44,12 @@ def leaderboard_item(info, indexnum):
                         ),
                         
                     ),
-                    rx.cond(
-                        ~State.top.contains(indexnum+1),
+                    # rx.cond(
+                    #     ~State.top.contains(indexnum+1),
                     
-                        rx.avatar(src=info[1]["pfp"], fallback= info[1]["username"][0:2], size="5", radius="full"),
-                        rx.avatar(src=info[1]["pfp"], fallback= info[1]["username"][0:2], size="5", radius="full", margin_top = "2vh"),  
-                    ), 
+                    #     rx.avatar(src=info[1]["pfp"], fallback= info[1]["username"][0:2], size="5", radius="full"),
+                    rx.avatar(src=info[1]["pfp"], fallback= info[1]["username"][0:2], size="5", radius="full", margin_top = "2vh"),  
+                    # ), 
                     spacing="6"
                 ),
                 
@@ -51,7 +62,7 @@ def leaderboard_item(info, indexnum):
                 rx.text(
                     
                     f"{info[1]["username"]}", 
-                    font_size=["2.5vw"],
+                    font_size=["5.5vh"],
                     font_weight="600",
                     
                     color="#3DD68C",
@@ -62,14 +73,27 @@ def leaderboard_item(info, indexnum):
                 rx.cond(
                     info[1]["tickets"],
                     rx.hstack(
-                        rx.text(
-                            f"{info[1]['tickets']}   ",
-                            font_size=["2vw"],
-                            font_weight="600",
-                            color="#3DD68C", 
-                            
-                            text_wrap="nowrap"
+                        rx.desktop_only(
+                            rx.text(
+                                f"{info[1]['tickets']}",
+                                font_size=["5vh"],
+                                font_weight="600",
+                                color="#3DD68C", 
+                                
+                                text_wrap="nowrap"
+                            ),
                         ),
+                        rx.mobile_and_tablet(
+                            rx.text(
+                                f"{info[1]['tickets']} 🎟️",
+                                font_size=["5vh"],
+                                font_weight="600",
+                                color="#3DD68C", 
+                                
+                                text_wrap="nowrap"
+                            ),
+                        ),
+                        
                         rx.box(
                             rx.desktop_only(
                                 LottieFiles(
@@ -79,7 +103,6 @@ def leaderboard_item(info, indexnum):
                                     width="9vw",
                                 ),
                             ),
-                            
                             position="relative",
                             right="3.4vw",
                             top="-2vh"
@@ -107,12 +130,21 @@ def leaderboard_item(info, indexnum):
 
 def leaderboard():
     return rx.vstack(
-        rx.box(
-            rx.text("Arcade leaderboard", font_size=["6vw", "5vw", "4vw"], font_weight="700", color="#B1F1CB"),
+        motion(
+            rx.text(
+                "Arcade leaderboard",
+                font_size=["6vw", "5vw", "4vw"],
+                font_weight="700",
+                color="#B1F1CB",
+                font_family="Slackey, sans-serif",
+            ),
             padding="2vw",
             background="#113B29",
             border_radius="8px",
             width="100%",
+            while_hover={"scale": 1.05},
+            while_tap={"scale": 0.95},
+            transition={"type": "spring", "stiffness": 400, "damping": 17},
         ),
         rx.vstack(
             rx.foreach(
@@ -122,6 +154,7 @@ def leaderboard():
             spacing="2vh",
             width="100%",
             overflow_y="auto",
+            overflow_x="hidden",
             height="70vh",
         ),
         spacing="3vh",
@@ -152,5 +185,9 @@ def index():
         padding_top = "12vh"
     )
 
-app = rx.App()
+app = rx.App(
+    stylesheets=[
+        "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Slackey&display=swap"
+    ],
+)
 app.add_page(index)
