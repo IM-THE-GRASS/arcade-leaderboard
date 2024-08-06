@@ -2,37 +2,43 @@ import reflex as rx
 from arcade_leaderboard.state import *
 import arcade_leaderboard.components.userbutton as userbutton
 from reflex_lottiefiles import LottieFiles
+from reflex_motion import motion
 
-
-def leaderboard_item(info, index):
-    return rx.box(
+def leaderboard_item(info, indexnum):
+    return motion(
         rx.hstack(
             
             rx.center(
                 rx.hstack(
                     rx.cond(
-                        index != 0,
+                        State.top.contains(indexnum+1),
+                        rx.box(
+                            LottieFiles(
+                                src=State.top_anims[indexnum+1],
+                                autoplay=True,
+                                loop=False,
+                                width="15vw",
+                                height="7vw"
+                            ),
+                            margin_right="-6.8vw",
+                            margin_left="-6vw",
+                            position="relative",
+                        ),
+                        
                         rx.text(
-                            f"{index + 1}",
+                            f"{indexnum + 1}",
                             color_scheme="green",
                             size="9",
                             font_weight="bolder"
                         ),
-                        rx.box(
-                            LottieFiles(
-                                src="https://lottie.host/b3f43394-a351-4755-9c03-5c61100951e4/kHb0G7NsSI.lottie",
-                                autoplay=True,
-                                loop=False,
-                                width="15vw",
-                                height="5vw"
-                            ),
-                            right="-100"
-                            position="relative",
-                        )
+                        
                     ),
+                    rx.cond(
+                        ~State.top.contains(indexnum+1),
                     
-                    
-                    rx.avatar(src=info[1]["pfp"], fallback= info[1]["username"][0:2], size="5", radius="full"),   
+                        rx.avatar(src=info[1]["pfp"], fallback= info[1]["username"][0:2], size="5", radius="full"),
+                        rx.avatar(src=info[1]["pfp"], fallback= info[1]["username"][0:2], size="5", radius="full", margin_top = "2vh"),  
+                    ), 
                     spacing="6"
                 ),
                 
@@ -57,7 +63,7 @@ def leaderboard_item(info, index):
                     info[1]["tickets"],
                     rx.hstack(
                         rx.text(
-                            f"{info[1]['tickets']} 🎟️",
+                            f"{info[1]['tickets']}   ",
                             font_size=["2vw"],
                             font_weight="600",
                             color="#3DD68C", 
@@ -75,7 +81,7 @@ def leaderboard_item(info, index):
                             ),
                             
                             position="relative",
-                            right="7.5vw",
+                            right="4.4vw",
                             top="-4.4vh"
                         )
                         
@@ -94,6 +100,9 @@ def leaderboard_item(info, index):
         border_radius="8px",
         width="100%",
         height="15vh",
+        while_hover={"scale": 1.05},
+        while_tap={"scale": 0.95},
+        transition={"type": "spring", "stiffness": 300, "damping": 17},
     )
 
 def leaderboard():
@@ -129,6 +138,8 @@ def index():
         rx.box(
             leaderboard(),
             userbutton.button(),
+                
+            
             width="95vw",
             max_width="1200px",
             position="relative",

@@ -139,4 +139,14 @@ class State(rx.State):
         self.peopledict = self.get_people()
         print(self.peopledict, "PEOPLEDICT")
     peopledict = get_people()
+    
+    
+    
+    top:list[int] = [1,2,3]
+    top_anims:dict[int, str]={
+        1 : "https://lottie.host/b3f43394-a351-4755-9c03-5c61100951e4/kHb0G7NsSI.lottie",
+        2 : "https://lottie.host/16454969-d7cf-4a51-a424-15ca9ed978d8/k9z0CUDBsM.json", 
+        3 : "https://lottie.host/2cbd6b2a-14a3-4a42-82e7-ceb07bf5ee59/k4lO4T6lHT.json"
+    
+    }
         
