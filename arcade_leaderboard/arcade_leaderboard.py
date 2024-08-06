@@ -163,9 +163,11 @@ def leaderboard():
         padding="3vw",
         background="#132D21",
         border_radius="8px",
-        on_mount=State.update_people
+        
     )
 
+
+@rx.page(on_load=State.update_people)
 def index():
     return rx.center(
         rx.box(

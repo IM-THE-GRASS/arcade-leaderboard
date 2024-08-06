@@ -13,7 +13,25 @@ dbclient = pymongo.MongoClient(os.environ.get("mongoDB"))
 db= dbclient["arcade-leaderboard"]
 people = db["people"]
 class State(rx.State):
+    def get_people(_ = None):
+        def decrypt(to_decode:str):
+            key = os.environ.get("key")
+            f = Fernet(key)
+            return f.decrypt(
+                to_decode
+            ).decode()
+        result = {}
+        for x in people.find().sort("tickets", -1):
+            x.pop('_id')
+            x["shop_token"] = decrypt(x["shop_token"])
+            print(x["tickets"])
+            result[x["username"]] = x
+        return result
+    
     peopledict:dict[str, dict[str, str]]
+    
+    peopledict = get_people()
+    
     reg_pfp:str
     reg_error:str
     reg_username:str
@@ -65,6 +83,7 @@ class State(rx.State):
                 if person_name == regname or regurl == person_url:
                     self.reg_error = "This user already exists!"
                     return False
+            self.reg_error = ""
             return True
         else:
             self.reg_error = "Invalid username"
@@ -91,7 +110,7 @@ class State(rx.State):
                     "pfp":pfp,
                     "shop_token":encrypt(shop_token),
                     "username":username,
-                    "tickets": str(tickets),
+                    "tickets": int(tickets),
                 }
             )
             self.peopledict = self.get_people()
@@ -143,19 +162,7 @@ class State(rx.State):
     
     
     
-    def get_people(self = None):
-        def decrypt(to_decode:str):
-            key = os.environ.get("key")
-            f = Fernet(key)
-            return f.decrypt(
-                to_decode
-            ).decode()
-        result = {}
-        for x in people.find().sort("tickets", -1):
-            x.pop('_id')
-            x["shop_token"] = decrypt(x["shop_token"])
-            result[x["username"]] = x
-        return result
+    
     def update_ticket_counts(self):
         def decrypt(to_decode:str):
             key = os.environ.get("key")
@@ -167,7 +174,7 @@ class State(rx.State):
         for person in people.find():
             person.pop('_id')
             person["shop_token"] = decrypt(person["shop_token"])
-            tickets = self.get_balance(person["shop_token"])
+            tickets = self.get_balance(person["shop_token"], True)
             print(person["username"], tickets)
             if tickets:
                 
@@ -179,11 +186,11 @@ class State(rx.State):
                 )
                 print(result.modified_count)
     def update_people(self):
-        
+        self.peopledict = self.get_people()
         self.update_ticket_counts()
         self.peopledict = self.get_people()
         print(self.peopledict, "PEOPLEDICT")
-    peopledict = get_people()
+    
     
     
     
