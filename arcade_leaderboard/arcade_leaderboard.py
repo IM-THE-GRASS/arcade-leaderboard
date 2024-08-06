@@ -76,13 +76,13 @@ def leaderboard_item(info, indexnum):
                                     src="https://lottie.host/1216c16a-a76d-4084-843c-7d6f06e931fa/FIfp90siNI.lottie",
                                     autoplay=True,
                                     loop=False,
-                                    width="11vw",
+                                    width="9vw",
                                 ),
                             ),
                             
                             position="relative",
-                            right="4.4vw",
-                            top="-4.4vh"
+                            right="3.4vw",
+                            top="-2vh"
                         )
                         
                     )

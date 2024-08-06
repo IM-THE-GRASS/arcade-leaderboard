@@ -6,11 +6,9 @@ import requests
 from bs4 import BeautifulSoup
 import json
 import datetime
-
+from cryptography.fernet import Fernet
 
 dotenv.load_dotenv()
-
-print(os.environ.get("mongoDB"))
 dbclient = pymongo.MongoClient(os.environ.get("mongoDB"))
 db= dbclient["arcade-leaderboard"]
 people = db["people"]
@@ -22,7 +20,33 @@ class State(rx.State):
     reg_url:str
     register_button_disabled:bool = True
     
+    
+    
+    
+    def decrypt(to_decode:str):
+        key = os.environ.get("key")
+        f = Fernet(key)
+        return f.decrypt(
+            to_decode
+        ).decode()
+    def encrypt(to_encrypt:str):
+        key = os.environ.get("key")
+        f = Fernet(key)
+        return f.encrypt(
+                bytes(
+                    to_encrypt,
+                    "utf-8"
+                )
+            ).decode()
     def check_reg_valid(self):
+        def decrypt(to_decode:str):
+            key = os.environ.get("key")
+            f = Fernet(key)
+            return f.decrypt(
+                to_decode
+            ).decode()
+        
+        
         if not self.get_balance(self.strip_url(self.reg_url)):
             self.reg_error = "Your shop URL is invalid. It should be in the format https://hackclub.com/arcade/XXXXXXXXXXXXXXXXX/shop/"
             return False
@@ -31,22 +55,31 @@ class State(rx.State):
             
             for person in people.find():
                 person.pop('_id')
+                person["shop_token"] = decrypt(person["shop_token"])
                 person_name = person["username"]
                 person_name = person_name.lower().replace(" ", "")
                 regname = self.reg_username
                 regname = regname.lower().replace(" ", "")
                 person_url = person["shop_token"]
                 regurl = self.strip_url(self.reg_url)
-                print(person_url, regurl)
                 if person_name == regname or regurl == person_url:
                     self.reg_error = "This user already exists!"
-                    #return False
+                    return False
             return True
         else:
             self.reg_error = "Invalid username"
             return False
     
     def register(self):
+        def encrypt(to_encrypt:str):
+            key = os.environ.get("key")
+            f = Fernet(key)
+            return f.encrypt(
+                bytes(
+                    to_encrypt,
+                    "utf-8"
+                )
+            ).decode()
         username = self.reg_username
         shop_token = self.strip_url(self.reg_url)
         tickets = self.get_balance(shop_token, True)
@@ -56,7 +89,7 @@ class State(rx.State):
             people.insert_one(
                 {
                     "pfp":pfp,
-                    "shop_token":shop_token,
+                    "shop_token":encrypt(shop_token),
                     "username":username,
                     "tickets": str(tickets),
                 }
@@ -102,8 +135,6 @@ class State(rx.State):
                 balance_text = int(balance_text)
             return balance_text
         except:
-            print("HE FAILED")
-            print("id", id)
             if not _int:
                 
                 return ""
@@ -113,15 +144,29 @@ class State(rx.State):
     
     
     def get_people(self = None):
-        
+        def decrypt(to_decode:str):
+            key = os.environ.get("key")
+            f = Fernet(key)
+            return f.decrypt(
+                to_decode
+            ).decode()
         result = {}
         for x in people.find().sort("tickets", -1):
             x.pop('_id')
+            x["shop_token"] = decrypt(x["shop_token"])
             result[x["username"]] = x
         return result
     def update_ticket_counts(self):
+        def decrypt(to_decode:str):
+            key = os.environ.get("key")
+            f = Fernet(key)
+            return f.decrypt(
+                to_decode
+            ).decode()
+        
         for person in people.find():
             person.pop('_id')
+            person["shop_token"] = decrypt(person["shop_token"])
             tickets = self.get_balance(person["shop_token"])
             print(person["username"], tickets)
             if tickets:
